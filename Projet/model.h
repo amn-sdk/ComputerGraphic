@@ -75,13 +75,7 @@ public:
             return false;
         }
 
-        // Chargement des textures de chaque materiau
         std::vector<GLuint> loadedTextures(materials.size(), 0);
-        for (size_t i = 0; i < materials.size(); i++) {
-            if (!materials[i].diffuse_texname.empty()) {
-                loadedTextures[i] = LoadTextureFromFile(materials[i].diffuse_texname, baseDir);
-            }
-        }
 
         for (const auto& shape : shapes) {
             std::vector<OBJVertex> vertices;
@@ -117,13 +111,17 @@ public:
             mesh.textureId = 0;
 
             // Assigner les proprietes de materiaux
-            if (shape.mesh.material_ids.size() > 0 && shape.mesh.material_ids[0] >= 0) {
+            if (shape.mesh.material_ids.size() > 0 && shape.mesh.material_ids[0] >= 0 &&
+                shape.mesh.material_ids[0] < (int)materials.size()) {
                 int matId = shape.mesh.material_ids[0];
                 const auto& mat = materials[matId];
                 mesh.ambient   = vec3(mat.ambient[0], mat.ambient[1], mat.ambient[2]);
                 mesh.diffuse   = vec3(mat.diffuse[0], mat.diffuse[1], mat.diffuse[2]);
                 mesh.specular  = vec3(mat.specular[0], mat.specular[1], mat.specular[2]);
                 mesh.shininess = mat.shininess;
+                if (loadedTextures[matId] == 0 && !mat.diffuse_texname.empty()) {
+                    loadedTextures[matId] = LoadTextureFromFile(mat.diffuse_texname, baseDir);
+                }
                 mesh.textureId = loadedTextures[matId];
             } else {
                 // Fallback par defaut

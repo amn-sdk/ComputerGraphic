@@ -38,7 +38,6 @@ GLuint g_ModelUBO;
 
 const int NB_INSTANCES = 5;
 GLuint g_InstanceVBOs[3]; 
-GLuint g_DiffuseTexture; 
 
 struct InstanceData {
     Mat4 world;
@@ -311,7 +310,7 @@ bool Initialise()
              << "vt 0.5 1.0\n"
              << "vt 0.0 0.0\n"
              << "vt 1.0 0.0\n"
-             << "usemtl gold\n"
+             << "usemtl matte\n"
              << "f 1/1/1 2/2/1 3/3/1\n"
              << "f 1/1/2 3/2/2 4/3/2\n"
              << "f 1/1/3 4/2/3 5/3/3\n"
@@ -321,7 +320,7 @@ bool Initialise()
 
         std::ofstream objC("cube.obj");
         objC << "mtllib pyramid.mtl\n"
-             << "usemtl gold\n"
+             << "usemtl textured\n"
              << "v -1.0 -1.0 1.0\n"
              << "v 1.0 -1.0 1.0\n"
              << "v 1.0 1.0 1.0\n"
@@ -350,7 +349,7 @@ bool Initialise()
 
         std::ofstream objCo("cone.obj");
         objCo << "mtllib pyramid.mtl\n"
-              << "usemtl gold\n"
+              << "usemtl reflective\n"
               << "v 0.0 1.0 0.0\n"
               << "v 0.0 -1.0 0.0\n";
         const int slices = 8;
@@ -384,11 +383,22 @@ bool Initialise()
         objCo.close();
 
         std::ofstream mtl("pyramid.mtl");
-        mtl << "newmtl gold\n"
+        mtl << "newmtl matte\n"
             << "Ka 0.1 0.1 0.1\n"
-            << "Kd 1.0 1.0 1.0\n" 
-            << "Ks 1.0 1.0 1.0\n"
-            << "Ns 64.0\n";
+            << "Kd 0.85 0.85 0.85\n"
+            << "Ks 0.04 0.04 0.04\n"
+            << "Ns 32.0\n\n"
+            << "newmtl textured\n"
+            << "Ka 0.1 0.1 0.1\n"
+            << "Kd 1.0 1.0 1.0\n"
+            << "Ks 0.25 0.25 0.25\n"
+            << "Ns 64.0\n"
+            << "map_Kd texture2.png\n\n"
+            << "newmtl reflective\n"
+            << "Ka 0.02 0.02 0.02\n"
+            << "Kd 0.45 0.45 0.45\n"
+            << "Ks 0.85 0.85 0.85\n"
+            << "Ns 128.0\n";
         mtl.close();
     }
     if (!g_PyramidModel.Load("pyramid.obj", "./") ||
@@ -414,27 +424,6 @@ bool Initialise()
             g_InstanceMatrices[i].color[c] = colors[i][c];
         }
         g_InstanceMatrices[i].shadingMode = shadingModes[i];
-    }
-
-    {
-        int w, h, comp;
-        unsigned char* data = stbi_load("texture2.png", &w, &h, &comp, STBI_rgb_alpha);
-        if (data) {
-            glGenTextures(1, &g_DiffuseTexture);
-            glBindTexture(GL_TEXTURE_2D, g_DiffuseTexture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            glBindTexture(GL_TEXTURE_2D, 0);
-            stbi_image_free(data);
-            std::cout << "Texture diffuse chargee: texture2.png" << std::endl;
-        } else {
-            std::cerr << "Erreur : impossible de charger texture2.png, fallback sur blanche" << std::endl;
-            g_DiffuseTexture = 0;
-        }
     }
 
     glGenBuffers(3, g_InstanceVBOs);
@@ -490,7 +479,6 @@ void Terminate()
     glDeleteBuffers(1,     &g_DragonVBO);
     glDeleteBuffers(1,     &g_DragonEBO);
     glDeleteTextures(1,    &g_WhiteTexture);
-    glDeleteTextures(1,    &g_DiffuseTexture);
     glDeleteBuffers(1,     &g_CameraUBO);
     glDeleteBuffers(1,     &g_ModelUBO);
     glDeleteBuffers(3,     g_InstanceVBOs);
@@ -677,13 +665,6 @@ void Render(GLFWwindow* window)
         glBufferSubData(GL_ARRAY_BUFFER, 0, 1 * sizeof(InstanceData), &g_InstanceMatrices[4]);
         
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        glActiveTexture(GL_TEXTURE0);
-        if (g_DiffuseTexture != 0) {
-            glBindTexture(GL_TEXTURE_2D, g_DiffuseTexture);
-        } else {
-            glBindTexture(GL_TEXTURE_2D, g_WhiteTexture);
-        }
 
         glUniform1i(glGetUniformLocation(pScene, "u_useInstancing"), 1);
         
@@ -879,6 +860,7 @@ int main()
     std::cout << "  Libre   : WASD/ZQSD + souris pour se deplacer/regarder" << std::endl;
     std::cout << "  1/2/3/4 : Filtres post-process FBO (Normal / Gris / Sepia / Inversion)" << std::endl;
     std::cout << "  I / O   : Ajuster l'effet Fresnel (retro-eclairage)" << std::endl;
+    std::cout << "  Scene   : Lambert couleur, Lambert hemispherique, Texture+Phong, Phong, Environment map" << std::endl;
     std::cout << "  ECHAP   : Quitter" << std::endl;
     std::cout << "=======================================" << std::endl;
 

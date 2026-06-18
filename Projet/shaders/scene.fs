@@ -57,8 +57,10 @@ void main()
 
     int mode = int(v_ShadingMode + 0.5);
 
+    bool useTexture = (u_material.hasTexture == 1) && (mode == 1);
+
     vec3 albedo;
-    if (mode == 1) {
+    if (useTexture) {
         vec4 texSample = texture(u_texture, v_TexCoord);
         albedo = pow(texSample.rgb, vec3(2.2));
     } else {

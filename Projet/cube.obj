@@ -1,5 +1,5 @@
 mtllib pyramid.mtl
-usemtl gold
+usemtl textured
 v -1.0 -1.0 1.0
 v 1.0 -1.0 1.0
 v 1.0 1.0 1.0

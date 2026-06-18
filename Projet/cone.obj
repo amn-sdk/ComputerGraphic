@@ -1,5 +1,5 @@
 mtllib pyramid.mtl
-usemtl gold
+usemtl reflective
 v 0.0 1.0 0.0
 v 0.0 -1.0 0.0
 v 1 -1.0 0

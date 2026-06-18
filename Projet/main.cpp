@@ -435,7 +435,7 @@ void Terminate()
     glDeleteTextures(1,&g_WhiteTexture);
     glDeleteBuffers(1,&g_CameraUBO);
     glDeleteBuffers(1,&g_ModelUBO);
-    glDeleteBuffers(3,&g_InstanceVBOs);
+    glDeleteBuffers(3,g_InstanceVBOs);
     glDeleteTextures(1,&g_CubemapTexture);
     glDeleteFramebuffers(1,&g_FBO);
     glDeleteTextures(1,&g_FBOTex);

@@ -171,7 +171,7 @@ Cela permet d'afficher plusieurs objets avec un même mesh, mais avec des positi
 
 ## Problèmes bloquants rencontrés
 
-Nous avons rencontré plusieurs problèmes importants pendant la mise au point. Nous avons utilisé l'IA comme aide au débogage pour identifier les causes, corriger le code et vérifier que les corrections respectaient bien les techniques vues en TP.
+Nous avons rencontré plusieurs problèmes importants pendant la mise au point. Nous avons utilisé l'IA (GPT et gémini) comme aide au débogage pour identifier les causes, corriger le code et vérifier que les corrections respectaient bien les techniques vues en TP.
 
 ### 1. Bypass du FBO
 

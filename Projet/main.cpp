@@ -726,7 +726,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             g_Camera.yaw      = -90.0f;
             g_Camera.pitch    = 0.0f;
             g_Camera.Update();
-            std::cout << "Camera : " << (g_Camera.freeMode ? "LIBRE (WASD)" : "ORBITALE") << std::endl;
+            std::cout << "Camera : " << (g_Camera.freeMode ? "LIBRE" : "ORBITALE") << std::endl;
         }
         if (key == GLFW_KEY_T)
         {
@@ -857,7 +857,6 @@ int main()
     std::cout << "  C       : Basculer camera (ORBITALE / LIBRE)" << std::endl;
     std::cout << "  T       : Changer la cible orbitale (Dragon / Pyramides)" << std::endl;
     std::cout << "  Orbitale: clic gauche + glisser | molette zoom ou fleches HAUT/BAS" << std::endl;
-    std::cout << "  Libre   : WASD/ZQSD + souris pour se deplacer/regarder" << std::endl;
     std::cout << "  1/2/3/4 : Filtres post-process FBO (Normal / Gris / Sepia / Inversion)" << std::endl;
     std::cout << "  I / O   : Ajuster l'effet Fresnel (retro-eclairage)" << std::endl;
     std::cout << "  Scene   : Lambert couleur, Lambert hemispherique, Texture+Phong, Phong, Environment map" << std::endl;
